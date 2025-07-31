@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect, useContext } from "react";
 import Header from "./components/Header";
 import Toolbox from "./components/Toolbox";
@@ -36,13 +35,9 @@ function App() {
     token: null,
   });
 
-
-
-
-    const login = async (data) => {
+  const login = async (data) => {
     setLoading(true);
     try {
-      
       setTimeout(() => {
         setAuth({
           isAuthenticated: true,
@@ -61,7 +56,6 @@ function App() {
   const register = async (data) => {
     setLoading(true);
     try {
-      
       setTimeout(() => {
         setAuth({
           isAuthenticated: true,
@@ -91,7 +85,6 @@ function App() {
         type: "success",
         message: "Image saved successfully!",
       });
-      
     }
   };
 
@@ -151,7 +144,7 @@ function App() {
     alert(`Do you really want to delete current image ?`);
     setPreview(null);
     setImage(null);
-    setCropParams({ unit:"px", x: 0, y: 0, width: 100, height: 100 });
+    setCropParams({ unit: "px", x: 0, y: 0, width: 100, height: 100 });
     setActiveTool(null);
   };
 
@@ -173,7 +166,6 @@ function App() {
       setRotateAngle(angle);
     }
   };
-
 
   const applyChanges = () => {
     setOperations((prev) => [
@@ -199,9 +191,11 @@ function App() {
     }
   }, [notification]);
 
-   return (
+  return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white">
-      {auth.isAuthenticated && (<Header view={view} setView={setView} logout={logout}/>)}
+      {auth.isAuthenticated && (
+        <Header view={view} setView={setView} logout={logout} />
+      )}
 
       {/* Notification */}
       {notification && (
@@ -211,27 +205,27 @@ function App() {
       )}
 
       <main className="container mx-auto p-4">
-         {!auth.isAuthenticated && view === "login" && (
-            <div className="flex items-center justify-center min-h-screen p-4">
-              <AuthForm
-                type="login"
-                onSubmit={login}
-                loading={loading}
-                switchFormType={() => setView("register")}
-              />
-            </div>
-          )}
+        {!auth.isAuthenticated && view === "login" && (
+          <div className="flex items-center justify-center min-h-screen p-4">
+            <AuthForm
+              type="login"
+              onSubmit={login}
+              loading={loading}
+              switchFormType={() => setView("register")}
+            />
+          </div>
+        )}
 
-          {!auth.isAuthenticated && view === "register" && (
-            <div className="flex items-center justify-center min-h-screen p-4">
-              <AuthForm
-                type="register"
-                onSubmit={register}
-                loading={loading}
-                switchFormType={() => setView("login")}
-              />
-            </div>
-          )}
+        {!auth.isAuthenticated && view === "register" && (
+          <div className="flex items-center justify-center min-h-screen p-4">
+            <AuthForm
+              type="register"
+              onSubmit={register}
+              loading={loading}
+              switchFormType={() => setView("login")}
+            />
+          </div>
+        )}
         {auth.isAuthenticated && view === "gallery" && (
           <Gallery setView={setView} savedImages={savedImages} />
         )}
@@ -246,7 +240,6 @@ function App() {
               handleExport={handleExport}
               deleteImage={deleteImage}
               onSave={saveImage}
-              
             />
             <Editor
               image={preview}

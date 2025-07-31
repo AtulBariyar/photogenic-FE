@@ -45,7 +45,7 @@ const Canvas = ({ image, activeTool, rotateAngle,  canvasRef }) => {
   }, [image, rotateAngle, activeTool, canvasRef]);
 // ${activeTool === 'crop' ? 'cursor-move' : ''}
   return (
-    <canvas ref={canvasRef} className={`max-w-full h-auto `} style={{ backgroundColor: '#1f2937', display: 'block', maxHeight: '70vh' }} />
+    <canvas ref={canvasRef} className="max-w-full" style={{ height: 'inherit', backgroundColor: '#1f2937', display: 'block', maxHeight: '70vh' }} />
   );
 };
 

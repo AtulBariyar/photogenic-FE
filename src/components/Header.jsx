@@ -1,7 +1,10 @@
 
 import logo from '../assets/logo.svg';
-const Header = ({view,setView}) => {
+const Header = ({view,setView,logout}) => {
   const guest= false;
+  const handlelogout=()=>{
+    logout();
+  }
   return (
     <header className="flex flex-row bg-blue-600/90 shadow-lg backdrop-blur-sm justify-between">
       <div className="container mx-auto px-4 py-4 sm:py-6 flex flex-row gap-2">
@@ -16,7 +19,7 @@ const Header = ({view,setView}) => {
         {/* <button disabled className={`text-white font-bold ${guest?'':'hidden'}`}>Hello Guest</button> */}
         {view==="editor" && 
         <button onClick={()=> setView("gallery")} className={`rounded text-white`}>Gallery</button>}
-    <button className="rounded text-red-500 font-semibold">signout</button>
+    <button onClick={handlelogout} className="rounded text-red-500 font-semibold">signout</button>
       </div>
     </header>
   );

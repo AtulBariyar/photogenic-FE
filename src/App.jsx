@@ -1,4 +1,4 @@
-// App.jsx
+
 import { useState, useRef, useEffect, useContext } from "react";
 import Header from "./components/Header";
 import Toolbox from "./components/Toolbox";
@@ -6,18 +6,20 @@ import Editor from "./components/Editor";
 import OperationsPanel from "./components/OperationsPanel";
 import Gallery from "./components/Gallery";
 import Alert from "./components/Alert";
+import AuthForm from "./components/AuthForm";
 
 function App() {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [operations, setOperations] = useState([]);
   const [activeTool, setActiveTool] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [cropParams, setCropParams] = useState({
     unit: "px",
     x: 0,
     y: 0,
-    width: 30,
-    height: 30,
+    width: 100,
+    height: 100,
   });
   const [completedCrop, setCompletedCrop] = useState(null);
   const [rotateAngle, setRotateAngle] = useState(0);
@@ -26,8 +28,61 @@ function App() {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
   const [format, setFormat] = useState("");
-  const [view, setView] = useState("editor");
+  const [view, setView] = useState("login");
   const [savedImages, setSavedImages] = useState([]);
+  const [auth, setAuth] = useState({
+    isAuthenticated: false,
+    user: null,
+    token: null,
+  });
+
+
+
+
+    const login = async (data) => {
+    setLoading(true);
+    try {
+      
+      setTimeout(() => {
+        setAuth({
+          isAuthenticated: true,
+          user: { email: data.email, name: "Test User" },
+          token: "jwt-token",
+        });
+        setView("editor");
+        setLoading(false);
+      }, 1500);
+    } catch (error) {
+      setNotification({ type: "error", message: "Login failed" });
+      setLoading(false);
+    }
+  };
+
+  const register = async (data) => {
+    setLoading(true);
+    try {
+      
+      setTimeout(() => {
+        setAuth({
+          isAuthenticated: true,
+          user: { email: data.email, name: data.name },
+          token: "jwt-token",
+        });
+        setView("editor");
+        setLoading(false);
+      }, 1500);
+    } catch (error) {
+      setNotification({ type: "error", message: "Registration failed" });
+      setLoading(false);
+    }
+  };
+
+  const logout = () => {
+    setAuth({ isAuthenticated: false, user: null, token: null });
+    setView("login");
+    setImage(null);
+    // setProcessedImage(null);
+  };
 
   const saveImage = () => {
     if (preview) {
@@ -96,6 +151,8 @@ function App() {
     alert(`Do you really want to delete current image ?`);
     setPreview(null);
     setImage(null);
+    setCropParams({ unit:"px", x: 0, y: 0, width: 100, height: 100 });
+    setActiveTool(null);
   };
 
   const resetChanges = () => {
@@ -117,111 +174,6 @@ function App() {
     }
   };
 
-  // const startDrag = (e) => {
-  //   if (activeTool !== 'crop' || !image) return;
-
-  //   const rect = containerRef.current.getBoundingClientRect();
-  //   const x = ((e.clientX - rect.left) / rect.width) * 100;
-  //   const y = ((e.clientY - rect.top) / rect.height) * 100;
-
-  //   const boxLeft = cropParams.x;
-  //   const boxRight = cropParams.x + cropParams.width;
-  //   const boxTop = cropParams.y;
-  //   const boxBottom = cropParams.y + cropParams.height;
-
-  //   const edgeThreshold = 5;
-
-  //   if (Math.abs(x - boxLeft) < edgeThreshold && Math.abs(y - boxTop) < edgeThreshold) {
-  //     setResizeHandle('top-left');
-  //   } else if (Math.abs(x - boxRight) < edgeThreshold && Math.abs(y - boxTop) < edgeThreshold) {
-  //     setResizeHandle('top-right');
-  //   } else if (Math.abs(x - boxLeft) < edgeThreshold && Math.abs(y - boxBottom) < edgeThreshold) {
-  //     setResizeHandle('bottom-left');
-  //   } else if (Math.abs(x - boxRight) < edgeThreshold && Math.abs(y - boxBottom) < edgeThreshold) {
-  //     setResizeHandle('bottom-right');
-  //   } else if (Math.abs(x - boxLeft) < edgeThreshold) {
-  //     setResizeHandle('left');
-  //   } else if (Math.abs(x - boxRight) < edgeThreshold) {
-  //     setResizeHandle('right');
-  //   } else if (Math.abs(y - boxTop) < edgeThreshold) {
-  //     setResizeHandle('top');
-  //   } else if (Math.abs(y - boxBottom) < edgeThreshold) {
-  //     setResizeHandle('bottom');
-  //   } else if (x > boxLeft && x < boxRight && y > boxTop && y < boxBottom) {
-  //     setResizeHandle('move');
-  //   } else {
-  //     return;
-  //   }
-
-  //   setDragStart({ x, y });
-  // };
-
-  // const handleDrag = (e) => {
-  //   if (!dragStart || !image || activeTool !== 'crop') return;
-
-  //   const rect = containerRef.current.getBoundingClientRect();
-  //   const x = ((e.clientX - rect.left) / rect.width) * 100;
-  //   const y = ((e.clientY - rect.top) / rect.height) * 100;
-  //   const dx = x - dragStart.x;
-  //   const dy = y - dragStart.y;
-
-  //   setCropParams(prev => {
-  //     const newParams = { ...prev };
-
-  //     if (resizeHandle === 'move') {
-  //       newParams.x = Math.max(0, Math.min(100 - newParams.width, newParams.x + dx));
-  //       newParams.y = Math.max(0, Math.min(100 - newParams.height, newParams.y + dy));
-  //     } else if (resizeHandle) {
-  //       switch (resizeHandle) {
-  //         case 'top-left':
-  //           newParams.x = Math.max(0, Math.min(newParams.x + newParams.width - 10, newParams.x + dx));
-  //           newParams.width = Math.max(10, newParams.width - dx);
-  //           newParams.y = Math.max(0, Math.min(newParams.y + newParams.height - 10, newParams.y + dy));
-  //           newParams.height = Math.max(10, newParams.height - dy);
-  //           break;
-  //         case 'top-right':
-  //           newParams.width = Math.max(10, Math.min(100 - newParams.x, newParams.width + dx));
-  //           newParams.y = Math.max(0, Math.min(newParams.y + newParams.height - 10, newParams.y + dy));
-  //           newParams.height = Math.max(10, newParams.height - dy);
-  //           break;
-  //         case 'bottom-left':
-  //           newParams.x = Math.max(0, Math.min(newParams.x + newParams.width - 10, newParams.x + dx));
-  //           newParams.width = Math.max(10, newParams.width - dx);
-  //           newParams.height = Math.max(10, Math.min(100 - newParams.y, newParams.height + dy));
-  //           break;
-  //         case 'bottom-right':
-  //           newParams.width = Math.max(10, Math.min(100 - newParams.x, newParams.width + dx));
-  //           newParams.height = Math.max(10, Math.min(100 - newParams.y, newParams.height + dy));
-  //           break;
-  //         case 'left':
-  //           newParams.x = Math.max(0, Math.min(newParams.x + newParams.width - 10, newParams.x + dx));
-  //           newParams.width = Math.max(10, newParams.width - dx);
-  //           break;
-  //         case 'right':
-  //           newParams.width = Math.max(10, Math.min(100 - newParams.x, newParams.width + dx));
-  //           break;
-  //         case 'top':
-  //           newParams.y = Math.max(0, Math.min(newParams.y + newParams.height - 10, newParams.y + dy));
-  //           newParams.height = Math.max(10, newParams.height - dy);
-  //           break;
-  //         case 'bottom':
-  //           newParams.height = Math.max(10, Math.min(100 - newParams.y, newParams.height + dy));
-  //           break;
-  //         default:
-  //           break;
-  //       }
-  //     }
-
-  //     return newParams;
-  //   });
-
-  //   setDragStart({ x, y });
-  // };
-
-  // const endDrag = () => {
-  //   setDragStart(null);
-  //   setResizeHandle(null);
-  // };
 
   const applyChanges = () => {
     setOperations((prev) => [
@@ -247,75 +199,9 @@ function App() {
     }
   }, [notification]);
 
-  // useEffect(() => {
-  //   if (!preview) return;
-
-  //   const canvas = canvasRef.current;
-  //   const ctx = canvas.getContext('2d');
-  //   const img = new Image();
-
-  //   img.onload = () => {
-  //     canvas.width = img.width;
-  //     canvas.height = img.height;
-
-  //     ctx.clearRect(0, 0, canvas.width, canvas.height);
-  //     ctx.save();
-  //     ctx.translate(canvas.width / 2, canvas.height / 2);
-  //     ctx.rotate((rotateAngle * Math.PI) / 180);
-  //     ctx.translate(-canvas.width / 2, -canvas.height / 2);
-  //     ctx.drawImage(img, 0, 0);
-
-  //     // if (activeTool === 'crop') {
-  //     //   const x = (cropParams.x / 100) * canvas.width;
-  //     //   const y = (cropParams.y / 100) * canvas.height;
-  //     //   const width = (cropParams.width / 100) * canvas.width;
-  //     //   const height = (cropParams.height / 100) * canvas.height;
-
-  //     //   ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-  //     //   ctx.beginPath();
-  //     //   ctx.rect(0, 0, canvas.width, canvas.height);
-  //     //   ctx.rect(x, y, width, height);
-  //     //   ctx.fill('evenodd');
-
-  //     //   ctx.strokeStyle = '#3b82f6';
-  //     //   ctx.lineWidth = 2;
-  //     //   ctx.strokeRect(x, y, width, height);
-
-  //     //    // Draw resize handles
-  //     //   const handleSize = 8;
-  //     //   const halfHandle = handleSize / 2;
-
-  //     //   // Corner handles
-  //     //   ctx.fillStyle = '#3b82f6';
-  //     //   ctx.fillRect(x - halfHandle, y - halfHandle, handleSize, handleSize); // top-left
-  //     //   ctx.fillRect(x + width - halfHandle, y - halfHandle, handleSize, handleSize); // top-right
-  //     //   ctx.fillRect(x - halfHandle, y + height - halfHandle, handleSize, handleSize); // bottom-left
-  //     //   ctx.fillRect(x + width - halfHandle, y + height - halfHandle, handleSize, handleSize); // bottom-right
-
-  //     //   // Edge handles
-  //     //   ctx.fillRect(x + width/2 - halfHandle, y - halfHandle, handleSize, handleSize); // top-center
-  //     //   ctx.fillRect(x + width/2 - halfHandle, y + height - halfHandle, handleSize, handleSize); // bottom-center
-  //     //   ctx.fillRect(x - halfHandle, y + height/2 - halfHandle, handleSize, handleSize); // left-center
-  //     //   ctx.fillRect(x + width - halfHandle, y + height/2 - halfHandle, handleSize, handleSize); // right-center
-
-  //     //   // Show dimensions if box is large enough
-  //     //   if (width > 100 && height > 30) {
-  //     //     ctx.fillStyle = 'white';
-  //     //     ctx.font = '12px Arial';
-  //     //     ctx.textAlign = 'center';
-  //     //     ctx.fillText(`${Math.round(width)}×${Math.round(height)}`, x + width/2, y + height/2 + 4);
-  //     //   }
-  //     // }
-
-  //     ctx.restore();
-  //   };
-
-  //   img.src = preview;
-  // }, [preview, rotateAngle, cropParams, activeTool]);
-
-  return (
+   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white">
-      <Header view={view} setView={setView} />
+      {auth.isAuthenticated && (<Header view={view} setView={setView} logout={logout}/>)}
 
       {/* Notification */}
       {notification && (
@@ -325,10 +211,31 @@ function App() {
       )}
 
       <main className="container mx-auto p-4">
-        {view === "gallery" && (
+         {!auth.isAuthenticated && view === "login" && (
+            <div className="flex items-center justify-center min-h-screen p-4">
+              <AuthForm
+                type="login"
+                onSubmit={login}
+                loading={loading}
+                switchFormType={() => setView("register")}
+              />
+            </div>
+          )}
+
+          {!auth.isAuthenticated && view === "register" && (
+            <div className="flex items-center justify-center min-h-screen p-4">
+              <AuthForm
+                type="register"
+                onSubmit={register}
+                loading={loading}
+                switchFormType={() => setView("login")}
+              />
+            </div>
+          )}
+        {auth.isAuthenticated && view === "gallery" && (
           <Gallery setView={setView} savedImages={savedImages} />
         )}
-        {view === "editor" && (
+        {auth.isAuthenticated && view === "editor" && (
           <div className="flex flex-col lg:flex-row gap-6">
             <Toolbox
               activeTool={activeTool}

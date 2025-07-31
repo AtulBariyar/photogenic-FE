@@ -1,76 +1,17 @@
-// CropControls.jsx
+
 const CropControls = ({ cropParams, setCropParams }) => {
   return (
-    // <div className="flex flex-col gap-4">
-    //   <h3 className="font-medium">Crop Controls</h3>
-    //   {/* <label>
-    //     X:
-    //     <input
-    //       type="number"
-    //       value={cropParams.x}
-    //       onChange={(e) => setCropParams({ ...cropParams, x: e.target.value })}
-    //       className="ml-2 p-1 rounded"
-    //     />
-    //   </label> */}
-    //   <div>
-    //     <label className="block text-sm font-medium mb-1">
-    //       X: {Math.round(cropParams.x)}%
-    //     </label>
-    //     <input
-    //       type="range"
-    //       min="0"
-    //       max={100 - cropParams.width}
-    //       value={cropParams.x}
-    //       onChange={(e) =>
-    //         setCropParams((prev) => ({ ...prev, x: parseInt(e.target.value) }))
-    //       }
-    //       className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-    //     />
-    //   </div>
-    //   <label>
-    //     Y:
-    //     <input
-    //       type="number"
-    //       value={cropParams.y}
-    //       onChange={(e) => setCropParams({ ...cropParams, y: e.target.value })}
-    //       className="ml-2 p-1 rounded"
-    //     />
-    //   </label>
-    //   <label>
-    //     Width:
-    //     <input
-    //       type="number"
-    //       value={cropParams.width}
-    //       onChange={(e) =>
-    //         setCropParams({ ...cropParams, width: e.target.value })
-    //       }
-    //       className="ml-2 p-1 rounded"
-    //     />
-    //   </label>
-    //   <label>
-    //     Height:
-    //     <input
-    //       type="number"
-    //       value={cropParams.height}
-    //       onChange={(e) =>
-    //         setCropParams({ ...cropParams, height: e.target.value })
-    //       }
-    //       className="ml-2 p-1 rounded"
-    //     />
-    //   </label>
-    // </div>
-
-    <div>
+     <div>
       <h3 className="text-lg font-semibold mb-4">Crop Controls</h3>
       <div className="grid grid-cols-4 gap-4 mb-4">
         <div>
           <label className="block text-sm font-medium mb-1">
-            X: {Math.round(cropParams.x)}%
+            X: {Math.round(cropParams.x)} px
           </label>
           <input
             type="range"
             min="0"
-            max={100 - cropParams.width}
+            max={cropParams.width}
             value={cropParams.x}
             onChange={(e) =>
               setCropParams((prev) => ({
@@ -83,12 +24,12 @@ const CropControls = ({ cropParams, setCropParams }) => {
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">
-            Y: {Math.round(cropParams.y)}%
+            Y: {Math.round(cropParams.y)} px
           </label>
           <input
             type="range"
             min="0"
-            max={100 - cropParams.height}
+            max={cropParams.height}
             value={cropParams.y}
             onChange={(e) =>
               setCropParams((prev) => ({
@@ -101,7 +42,7 @@ const CropControls = ({ cropParams, setCropParams }) => {
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">
-            Width: {Math.round(cropParams.width)}%
+            Width: {Math.round(cropParams.width)} px
           </label>
           <input
             type="range"
@@ -119,7 +60,7 @@ const CropControls = ({ cropParams, setCropParams }) => {
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">
-            Height: {Math.round(cropParams.height)}%
+            Height: {Math.round(cropParams.height)} px
           </label>
           <input
             type="range"

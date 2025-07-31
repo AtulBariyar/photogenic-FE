@@ -18,12 +18,16 @@ export default function AuthForm({ type, onSubmit, loading, switchFormType }) {
   };
   return (
     <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
-      <div className="flex justify-center">
+      <div className="flex justify-center gap-2 ">
         <img
-          src="https://placehold.co/300x100"
-          alt="Editor Pro logo with geometric camera icon"
+          src="/src/assets/logo.svg"
+          alt="Photogenic icon"
           className="h-16"
         />
+        <div className='flex flex-col '> 
+          <h1 className="sm:text-3xl text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 ">Photogenic</h1>
+        <p className="sm:text-md text-s bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-red-400">Image Editing Studio</p>
+        </div>
       </div>
       <h2 className="text-2xl font-bold text-center text-gray-800">
         {type === "login" ? "Sign In" : "Create Account"}
@@ -62,6 +66,7 @@ export default function AuthForm({ type, onSubmit, loading, switchFormType }) {
             id="email"
             name="email"
             value={formData.email}
+            autoComplete="username"
             onChange={handleChange}
             className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             required
@@ -80,6 +85,7 @@ export default function AuthForm({ type, onSubmit, loading, switchFormType }) {
             id="password"
             name="password"
             value={formData.password}
+            autoComplete={type==="login"?"current-password":"new-password"}
             onChange={handleChange}
             className="w-full px-3 py-2 mt-1 text-black border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             required
@@ -99,6 +105,7 @@ export default function AuthForm({ type, onSubmit, loading, switchFormType }) {
               id="confirmPassword"
               name="confirmPassword"
               value={formData.confirmPassword}
+              autoComplete="new-password"
               onChange={handleChange}
               className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               required

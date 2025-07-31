@@ -1,7 +1,7 @@
 // Editor.jsx
 import Canvas from "./Canvas";
 import ToolControls from "./ToolControls";
-import ReactCrop, { centerCrop, makeAspectCrop } from "react-image-crop";
+import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { useRef,useState } from "react";
 
@@ -22,16 +22,23 @@ const Editor = ({
 }) => {
   const imageRef = useRef(null);
   const [scale, setScale] = useState(1);
-  const [clientDisplay, setClientDisplay] = useState();
+  const [clientDisplay, setClientDisplay] = useState({
+    scaledWidth:100,
+    scaledHeight:100,
+  });
+  // const [scaledParam, setScaledParam] = useState(null);
 
   const handleImageLoad = (img) => {
     imageRef.current = img; // Store the loaded image reference
     const displayWidth = img.clientWidth;
     const originalWidth = img.naturalWidth;
+    const originalHeight = img.naturalHeight;
     setScale(originalWidth / displayWidth);
-    setClientDisplay({
-      
-    })
+    const orgDimension = {
+      scaledWidth:originalWidth,
+      scaledHeight:originalHeight
+    }
+    setClientDisplay(orgDimension)
   };
 
   const handleCropComplete = (crop) => {
@@ -42,6 +49,7 @@ const Editor = ({
       height: crop.height * scale,
     };
     setCompletedCrop(scaleCrop);
+    // setScaledParam(scaleCrop);
   };
 
   return (
@@ -96,6 +104,9 @@ const Editor = ({
             setActiveTool={setActiveTool}
             cropParams={cropParams}
             setCropParams={setCropParams}
+            // scaledParam={scaledParam}
+            // setScaledParams={setScaledParam}
+            clientDisplay={clientDisplay}
             rotateAngle={rotateAngle}
             handleRotate={handleRotate}
             applyChanges={applyChanges}

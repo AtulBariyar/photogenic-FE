@@ -10,8 +10,8 @@ const Toolbox = ({
   onSave
   }) => {
   return (
-    <div className="order-2 md:order-1 w-full lg:w-72 bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-xl p-5">
-      <h2 className="text-xl font-semibold mb-5 pb-2 border-b border-gray-700">
+    <div className="order-2 md:order-1 w-full lg:w-72 bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-xl p-5 pt-2">
+      <h2 className="text-xl font-semibold mb-4 pb-2 border-b border-gray-700">
         Toolbox
       </h2>
       <ImageUpload

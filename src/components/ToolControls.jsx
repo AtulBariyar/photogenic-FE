@@ -2,14 +2,14 @@
 import CropControls from './CropControls';
 import RotateControls from './RotateControls';
 
-const ToolControls = ({ activeTool, setActiveTool, cropParams, setCropParams, rotateAngle, handleRotate,applyChanges }) => {
+const ToolControls = ({ activeTool, setActiveTool, cropParams, setCropParams, clientDisplay, rotateAngle, handleRotate,applyChanges }) => {
   return (
     <div className={`bottom-0 left-0 right-0 bg-gray-800/90 backdrop-blur-md p-5 transition-all ${activeTool ? 'translate-y-0' : 'translate-y-full'}`}>
       {activeTool === 'rotate' && (
         <RotateControls rotateAngle={rotateAngle} handleRotate={handleRotate} />
       )}
       {activeTool === 'crop' && (
-        <CropControls cropParams={cropParams} setCropParams={setCropParams} />
+        <CropControls cropParams={cropParams} setCropParams={setCropParams} clientDisplay={clientDisplay} />
       )}
       <div className="flex justify-end gap-3">
         <button 

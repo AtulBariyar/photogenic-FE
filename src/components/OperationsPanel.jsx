@@ -1,4 +1,4 @@
-// OperationsPanel.jsx
+
 const OperationsPanel = ({ operations, setOperations , handleExport, setNotification}) => {
   const handleSingleOp=(index)=>{
     const newArray = [... operations];
@@ -20,17 +20,6 @@ const OperationsPanel = ({ operations, setOperations , handleExport, setNotifica
 
 
   return (
-    // <div className="order-3 md:order-3 w-full lg:w-72 bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-xl p-5">
-    //   <h2 className="text-xl font-semibold mb-5 pb-2 border-b border-gray-700">Operations</h2>
-    //   <ul className="space-y-2">
-    //     {operations.map((op, index) => (
-    //       <li key={index} className="flex justify-between">
-    //         <span>{op.type}</span>
-    //         <span>{JSON.stringify(op.params)}</span>
-    //       </li>
-    //     ))}
-    //   </ul>
-    // </div>
 
     <div className="order-3 w-full lg:w-72 bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-xl p-5">
              <ExportOptions handleExport={handleExport} />
@@ -93,7 +82,7 @@ const ExportOptions = ({ handleExport }) => {
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="hRemove this line when pasting into your code-5 w-5"
+            className="h-5 w-5"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"

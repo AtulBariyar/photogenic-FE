@@ -1,5 +1,5 @@
 
-const CropControls = ({ cropParams, setCropParams }) => {
+const CropControls = ({ cropParams, setCropParams, clientDisplay }) => {
   return (
      <div>
       <h3 className="text-lg font-semibold mb-4">Crop Controls</h3>
@@ -11,7 +11,7 @@ const CropControls = ({ cropParams, setCropParams }) => {
           <input
             type="range"
             min="0"
-            max={cropParams.width}
+            max={clientDisplay.scaledWidth}
             value={cropParams.x}
             onChange={(e) =>
               setCropParams((prev) => ({
@@ -29,7 +29,7 @@ const CropControls = ({ cropParams, setCropParams }) => {
           <input
             type="range"
             min="0"
-            max={cropParams.height}
+            max={(clientDisplay.scaledHeight)-(cropParams.y)}
             value={cropParams.y}
             onChange={(e) =>
               setCropParams((prev) => ({
@@ -47,7 +47,7 @@ const CropControls = ({ cropParams, setCropParams }) => {
           <input
             type="range"
             min="10"
-            max="100"
+            max={clientDisplay.scaledWidth}
             value={cropParams.width}
             onChange={(e) =>
               setCropParams((prev) => ({
@@ -65,7 +65,7 @@ const CropControls = ({ cropParams, setCropParams }) => {
           <input
             type="range"
             min="10"
-            max="100"
+            max={clientDisplay.scaledHeight}
             value={cropParams.height}
             onChange={(e) =>
               setCropParams((prev) => ({

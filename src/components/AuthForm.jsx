@@ -1,21 +1,29 @@
 import { useState } from "react";
 
-export default function AuthForm({ type, onSubmit, loading, switchFormType }) {
+export default function AuthForm({ type, onSubmit, loading, switchFormType, guestLogin }) { 
   const [formData, setFormData] = useState(
     type === "login"
-      ? { email: "", password: "" }
+      ? { name: "", password: "" }
       : { name: "", email: "", password: "", confirmPassword: "" }
   );
+
+  const [formError, setformError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setformError("");
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if(type==="register" && formData.password !== formData.confirmPassword){
+      setformError("Password not matching")
+      return;
+    }
     onSubmit(formData);
-  };
+};
+   
   return (
     <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
       <div className="flex justify-center gap-2 ">
@@ -34,26 +42,27 @@ export default function AuthForm({ type, onSubmit, loading, switchFormType }) {
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4 text-black">
-        {type === "register" && (
+        
           <div>
             <label
               htmlFor="name"
               className="block text-sm font-medium text-gray-700"
             >
-              Name
+              User Name
             </label>
             <input
               type="text"
               id="name"
               name="name"
               value={formData.name}
+              autoComplete="username"
               onChange={handleChange}
               className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               required
             />
           </div>
-        )}
-
+        
+        {type === "register" && (
         <div>
           <label
             htmlFor="email"
@@ -66,12 +75,13 @@ export default function AuthForm({ type, onSubmit, loading, switchFormType }) {
             id="email"
             name="email"
             value={formData.email}
-            autoComplete="username"
+            
             onChange={handleChange}
             className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             required
           />
         </div>
+      )}
 
         <div>
           <label
@@ -112,6 +122,7 @@ export default function AuthForm({ type, onSubmit, loading, switchFormType }) {
             />
           </div>
         )}
+        <p className="text-red-700">{formError} </p>
 
         <button
           type="submit"
@@ -138,7 +149,11 @@ export default function AuthForm({ type, onSubmit, loading, switchFormType }) {
           {type === "login"
             ? "Need an account? Register"
             : "Already have an account? Sign In"}
-        </button>
+        </button><br/>
+        <button
+        onClick={guestLogin}
+        className="text-indigo-600 font-bold hover:text-indigo-800 focus:outline-none"
+        >Login as Guest</button>
       </div>
     </div>
   );

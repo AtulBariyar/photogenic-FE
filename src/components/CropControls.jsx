@@ -78,12 +78,12 @@ const CropControls = ({ cropParams, setCropParams, clientDisplay }) => {
         </div>
       </div>
 
-      <div className="text-sm text-gray-400 mb-4">
+      {/* <div className="text-sm text-gray-400 mb-4">
         <p>
           Drag the edges or corners of the crop box to resize, or drag inside to
           reposition.
         </p>
-      </div>
+      </div> */}
     </div>
   );
 };

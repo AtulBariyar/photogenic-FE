@@ -10,6 +10,7 @@ import AuthForm from "./components/AuthForm";
 function App() {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [imageCopy, setImageCopy] = useState(null);
   const [operations, setOperations] = useState([]);
   const [activeTool, setActiveTool] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -23,32 +24,64 @@ function App() {
   const [completedCrop, setCompletedCrop] = useState(null);
   const [rotateAngle, setRotateAngle] = useState(0);
   const [notification, setNotification] = useState(null);
-  // const [isClicked, setIsClicked] = useState(false);
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
-  const [format, setFormat] = useState("");
   const [view, setView] = useState("login");
   const [savedImages, setSavedImages] = useState([]);
   const [auth, setAuth] = useState({
     isAuthenticated: false,
     user: null,
     token: null,
+    guest: false,
   });
+  const [size, setSize] = useState(null);
+  const [ctrlParam, setCtrlParam] = useState(null);
+  const [originalDimensions, setOriginalDimensions] = useState({ width: 0, height: 0 });
+
+  const host = "http://localhost:8080";
+
+
+  useEffect(() => {
+   
+    console.log("ctrlParam from app : "+ctrlParam);
+    
+    
+  }, [ctrlParam])
+
 
   const login = async (data) => {
     setLoading(true);
     try {
+      const response = await fetch(`${host}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username: data.name, password: data.password }),
+      });
+      const body = await response.text();
+      const jwtToken = body.split(":");
+      // console.log(jwtToken[1]);
+
+      if (!response.ok) {
+        throw new Error(body.error || "An error occurred");
+      }
+
       setTimeout(() => {
         setAuth({
           isAuthenticated: true,
-          user: { email: data.email, name: "Test User" },
-          token: "jwt-token",
+          user: { name: data.name, email: "TestUser@gmail.com" },
+          token: jwtToken[1],
         });
         setView("editor");
         setLoading(false);
       }, 1500);
     } catch (error) {
-      setNotification({ type: "error", message: "Login failed" });
+      // console.log(error);
+      setNotification({
+        type: "error",
+        message: "Incorrect Username or Password",
+      });
       setLoading(false);
     }
   };
@@ -56,13 +89,25 @@ function App() {
   const register = async (data) => {
     setLoading(true);
     try {
+      const response = await fetch(`${host}/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: data.name,
+          password: data.password,
+          email: data.email,
+        }),
+      });
+
       setTimeout(() => {
         setAuth({
-          isAuthenticated: true,
+          isAuthenticated: false,
           user: { email: data.email, name: data.name },
           token: "jwt-token",
         });
-        setView("editor");
+        setView("login");
         setLoading(false);
       }, 1500);
     } catch (error) {
@@ -72,19 +117,90 @@ function App() {
   };
 
   const logout = () => {
-    setAuth({ isAuthenticated: false, user: null, token: null });
+    setAuth({ isAuthenticated: false, user: null, token: null, guest: false });
     setView("login");
     setImage(null);
+    setSavedImages([]);
+    setPreview(null);
+    setRotateAngle(0);
+    setCropParams({ unit: "px", x: 10, y: 10, width: 100, height: 100 });
+    setActiveTool(null);
+    setCompletedCrop(null);
     // setProcessedImage(null);
   };
 
-  const saveImage = () => {
+  const guestLogin = async () => {
+    const response = await fetch(`${host}/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username: "guest", password: "g@455#logNCom" }),
+    });
+    const body = await response.text();
+    const jwtToken = body.split(":");
+    // console.log(jwtToken[1]);
+    setAuth({
+      isAuthenticated: true,
+      user: { name: "Guest", email: "Guest@gmail.com" },
+      token: jwtToken[1],
+      guest: true,
+    });
+    setView("editor");
+  };
+
+  const saveImage = async () => {
     if (preview) {
-      setSavedImages((prev) => [...prev, preview]);
-      setNotification({
-        type: "success",
-        message: "Image saved successfully!",
-      });
+      try {
+        const formData = new FormData();
+        const base64Data = preview;
+
+        const parts = base64Data.split(";base64,");
+        const mimeType = parts[0].split(":")[1];
+        const rawBase64 = parts[1];
+
+        //Decode Base64 to Binary
+        const byteCharacters = atob(rawBase64);
+        const byteNumbers = new Array(byteCharacters.length);
+
+        //Create a Uint8Array
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+
+        // Create a Blob
+        const blob = new Blob([byteArray], { type: mimeType });
+
+        // Create a File object from the Blob ( for backends expecting a file)
+
+        const filename = `image_${Date.now()}.jpeg`;
+        const imageFile = new File([blob], filename, { type: mimeType });
+
+        // Append to FormData
+        formData.append("file", imageFile, filename);
+
+        // // For debugging
+        // for (let [key, value] of formData.entries()) {
+        //   console.log(`FormData Entry After Conversion: ${key}: ${value}`);
+        // }
+        // console.log('Converted File Object:', imageFile);
+
+        const response = await fetch(`${host}/img/uploadImg`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+          body: formData,
+        });
+
+        setNotification({
+          type: "success",
+          message: "Image saved successfully!",
+        });
+      } catch (e) {
+        setNotification({ type: "error", message: "Saving failed" });
+      }
     }
   };
 
@@ -94,11 +210,36 @@ function App() {
       const reader = new FileReader();
       const fileType = file.type;
       const extension = fileType.split("/").pop();
-      setFormat(extension);
-      reader.onload = () => {
+      const size = file.size;
+      const SizeInKB = size / 1024;
+      const SizeInMB = size / (1024 * 1024);
+      setSize(
+        SizeInKB > 1000
+          ? SizeInMB.toFixed(2) + " MB"
+          : SizeInKB.toFixed(2) + " KB"
+      );
+      reader.onload = (readerEvent) => { // Access readerEvent to get result
+        const imageDataUrl = readerEvent.target.result;
+        // console.log(reader.result);
         setImage(reader.result);
+        setImageCopy(reader.result);
         setPreview(reader.result);
+      
+
+      const img = new Image(); // Create a new Image object
+
+        img.onload = () => { // Set its onload handler
+          setOriginalDimensions({
+            width: img.naturalWidth,
+            height: img.naturalHeight,
+          });
+          
+        };
+        img.src = imageDataUrl;
       };
+
+
+
       reader.readAsDataURL(file);
     }
     setNotification({
@@ -107,36 +248,85 @@ function App() {
     });
   };
 
-  useEffect(() => {}, [format]);
-
-  const downloadImage = (fileformat) => {
+  const downloadImage = async (fileformat) => {
     if (!preview) return;
+      
+      const formData = new  FormData();
+      const base64Data = preview;
+        const parts = base64Data.split(";base64,");
+        const mimeType = parts[0].split(":")[1];
+        const rawBase64 = parts[1];
+        const byteCharacters = atob(rawBase64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: mimeType });
+       let fileName = "Photogenic-edit";
+        fileName = fileName + "." + fileformat;
+        const imageFile = new File([blob], { type: mimeType });
+        formData.append("file", imageFile);
 
-    console.log("File format:", fileformat);
+    
+    
+    if(fileformat==="pdf"){
+      try {
+        const response = await fetch(`${host}/img/convertImageToPDF`,{
+          method:"POST",
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+          body:formData
 
-    const link = document.createElement("a");
-    let fileName = "Photogenic-edit";
+      });
+      const downloadBlob = await response.blob();
+      const downloadUrl = URL.createObjectURL(downloadBlob);
+      const downloadLink = document.createElement("a");
+      downloadLink.href = downloadUrl;
+      downloadLink.download = fileName;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      URL.revokeObjectURL(downloadUrl);
 
-    if (fileformat === "jpeg") {
-      fileName += ".jpg";
-    } else if (fileformat === "png") {
-      fileName += ".png";
-    } else if (fileformat === "webp") {
-      fileName += ".webp";
-    } else if (fileformat === "pdf") {
-      fileName += ".pdf";
-    } else {
-      fileName += ".png";
+      } catch (error) {
+        console.log("error generated: "+error);
+      }
+
     }
+    else if(fileformat==="jpg"){
+      try {
+        const response=await fetch(`${host}/img/convertToJPG`,{
+          method:"POST",
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+          body:formData
+        });
+        const downloadBlob = await response.blob();
+      const downloadUrl = URL.createObjectURL(downloadBlob);
+      const downloadLink = document.createElement('a');
+      downloadLink.href = downloadUrl;
+      downloadLink.download = fileName;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      URL.revokeObjectURL(downloadUrl);
+      } catch (error) {
+        console.log("generated error : "+error);
+      }
+    }else{
 
-    link.download = fileName;
-    link.href = preview;
-    link.click();
+    const downloadLink = document.createElement('a');
+    downloadLink.download = fileName;
+    downloadLink.href = preview;
+    downloadLink.click();
+    }
   };
 
   const handleExport = (fileformat) => {
     alert(`Image exported as ${fileformat}`);
-    //setFormat(fileformat);
     downloadImage(fileformat);
   };
 
@@ -146,12 +336,15 @@ function App() {
     setImage(null);
     setCropParams({ unit: "px", x: 0, y: 0, width: 100, height: 100 });
     setActiveTool(null);
+    setRotateAngle(0);
+    setCtrlParam(null);
   };
 
   const resetChanges = () => {
     setPreview(image);
+    setImageCopy(image);
     setRotateAngle(0);
-    setCropParams({ x: 10, y: 10, width: 80, height: 80 });
+    setCropParams({ unit: "px", x: 10, y: 10, width: 100, height: 100 });
     setActiveTool(null);
     setNotification({
       type: "success",
@@ -159,7 +352,7 @@ function App() {
     });
   };
 
-  const handleRotate = (angle, manualInput = false) => {
+  const handleRotate = (angle, manualInput) => {
     if (!manualInput) {
       setRotateAngle((prev) => prev + angle);
     } else {
@@ -167,19 +360,117 @@ function App() {
     }
   };
 
-  const applyChanges = () => {
-    setOperations((prev) => [
-      ...prev,
-      {
-        type: activeTool,
-        params: activeTool === "crop" ? cropParams : rotateAngle,
-      },
-    ]);
-    setActiveTool(null);
-    setNotification({
-      type: "success",
-      message: `Image ${activeTool} successful!`,
-    });
+  const applyChanges = async (data) => {
+    if (imageCopy) {
+      setOperations((prev) => [
+        ...prev,
+        {
+          type: activeTool,
+          params:
+            activeTool === "crop"
+              ? cropParams
+              : activeTool === "rotate"
+              ? rotateAngle
+              : activeTool ==="resize"
+              ? "some Value"
+              : ctrlParam,
+        },
+      ]);
+
+      const formData = new FormData();
+      const base64Data = imageCopy;
+      const parts = base64Data.split(";base64,");
+      const mimeType = parts[0].split(":")[1];
+      const rawBase64 = parts[1];
+      const byteCharacters = atob(rawBase64);
+      const byteNumbers = new Array(byteCharacters.length);
+
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+
+      const blob = new Blob([byteArray], { type: mimeType });
+      // const filename = `image_${Date.now()}.jpeg`;
+      const imageFile = new File([blob], { type: mimeType });
+
+      formData.append("file", imageFile);
+      if(activeTool==="crop"){
+        formData.append("x", cropParams.x)
+        formData.append("y", cropParams.y)
+        formData.append("width", cropParams.width)
+        formData.append("height", cropParams.height)
+      }
+      else if(activeTool==="rotate"){
+        formData.append("angle", rotateAngle);
+      }else if(activeTool==="resize"){
+        console.log("apply changes "+ctrlParam.width);
+        formData.append("width", ctrlParam.width);
+        formData.append("height", ctrlParam.height);
+      }else if(activeTool==="watermark"){
+        formData.append("title",ctrlParam);
+      }else if(activeTool==="mirror"){
+        formData.append("direction",ctrlParam);
+      }else if(activeTool==="compress"){
+        formData.append("size",ctrlParam);
+      }
+
+        try {
+        const response = await fetch(`${host}/img/${activeTool}`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+          body: formData,
+        });
+
+        const contentType = response.headers.get("Content-Type");
+        if (!contentType || !contentType.startsWith("image/")) {
+          throw new Error("Response is not an image type.");
+        }
+
+        const arrayBuffer = await response.arrayBuffer();
+        const binaryString = new Uint8Array(arrayBuffer).reduce(
+          (data, byte) => data + String.fromCharCode(byte),
+          ""
+        );
+        const base64Image = btoa(binaryString);
+        setPreview(`data:${contentType};base64,${base64Image}`);
+        // console.log(preview);
+        setImageCopy(preview);
+
+        setNotification({
+          type: "success",
+          message: `Image ${activeTool} successful!`,
+        });
+        setActiveTool(null);
+      } catch (error) {
+        console.log(error);
+        setNotification({ type: "error", message: "Something Went Wrong" });
+      }
+    }
+  };
+
+  const loadGallery = async () => {
+    try {
+      const response = await fetch(`${host}/img/listAll`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${auth.token}`,
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          setNotification({ type: "info", message: "No Image in Gallery !" });
+        }
+        return;
+      }
+      const body = await response.json();
+      setSavedImages(body);
+    } catch (error) {
+      setNotification({ type: "error", message: "Server Failed" });
+    }
   };
 
   useEffect(() => {
@@ -194,7 +485,13 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white">
       {auth.isAuthenticated && (
-        <Header view={view} setView={setView} logout={logout} />
+        <Header
+          view={view}
+          setView={setView}
+          logout={logout}
+          auth={auth}
+          loadGallery={loadGallery}
+        />
       )}
 
       {/* Notification */}
@@ -212,6 +509,7 @@ function App() {
               onSubmit={login}
               loading={loading}
               switchFormType={() => setView("register")}
+              guestLogin={guestLogin}
             />
           </div>
         )}
@@ -223,6 +521,7 @@ function App() {
               onSubmit={register}
               loading={loading}
               switchFormType={() => setView("login")}
+              guestLogin={guestLogin}
             />
           </div>
         )}
@@ -240,6 +539,7 @@ function App() {
               handleExport={handleExport}
               deleteImage={deleteImage}
               onSave={saveImage}
+              auth={auth}
             />
             <Editor
               image={preview}
@@ -255,6 +555,11 @@ function App() {
               handleImageUpload={handleImageUpload}
               handleRotate={handleRotate}
               applyChanges={applyChanges}
+              size={size}
+              setSize={setSize}
+              ctrlParam={ctrlParam}
+              setCtrlParam={setCtrlParam}
+              originalDimensions={originalDimensions}
             />
             <OperationsPanel
               operations={operations}

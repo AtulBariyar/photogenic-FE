@@ -7,26 +7,27 @@ const Toolbox = ({
   resetChanges,
   image,
   deleteImage,
-  onSave
+  onSave,
+  auth
   }) => {
   return (
     <div className="order-2 md:order-1 w-full lg:w-72 bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-xl p-5 pt-2">
-      <h2 className="text-xl font-semibold mb-4 pb-2 border-b border-gray-700">
+      {/* <h2 className="text-xl font-semibold mb-1 pb-1 border-b border-gray-700">
         Toolbox
-      </h2>
+      </h2> */}
       <ImageUpload
         handleImageUpload={handleImageUpload}
         resetChanges={resetChanges}
         image={image}
         deleteImage={deleteImage}
       />
-      <ToolButtons activeTool={activeTool} setActiveTool={setActiveTool} onSave={onSave} />
+      <ToolButtons activeTool={activeTool} setActiveTool={setActiveTool} onSave={onSave} auth={auth} />
       
     </div>
   );
 };
 
-const ToolButtons = ({ activeTool, setActiveTool, onSave }) => {
+const ToolButtons = ({ activeTool, setActiveTool, onSave, auth }) => {
   const [isClicked, setIsClicked] = useState(false);
 const saving=()=>{
   setIsClicked(true);
@@ -85,8 +86,15 @@ const saving=()=>{
         </svg>
         <span>Crop</span>
       </button>
-      <button 
-        className="p-3 rounded-lg flex flex-col items-center bg-gray-700/50 hover:bg-gray-700 transition-colors">
+      <button
+        onClick={() => setActiveTool("resize")} 
+        // className="p-3 rounded-lg flex flex-col items-center bg-gray-700/50 hover:bg-gray-700 transition-colors">
+        className={`p-3 rounded-lg flex flex-col items-center transition-all ${
+          activeTool === "resize"
+            ? "bg-blue-600/80 shadow-lg scale-105"
+            : "bg-gray-700/50 hover:bg-gray-700"
+        }`}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-6 w-6 mb-1"
@@ -104,7 +112,13 @@ const saving=()=>{
         <span>Resize</span>
       </button>
       <button 
-        className="p-3 rounded-lg flex flex-col items-center bg-gray-700/50 hover:bg-gray-700 transition-colors">
+        onClick={() => setActiveTool("watermark")}
+        className={`p-3 rounded-lg flex flex-col items-center transition-all ${
+          activeTool === "watermark"
+            ? "bg-blue-600/80 shadow-lg scale-105"
+            : "bg-gray-700/50 hover:bg-gray-700"
+        }`}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-6 w-6 mb-1"
@@ -123,8 +137,9 @@ const saving=()=>{
       </button>
       <button 
         onClick={saving}
+        disabled={auth.guest}
         className={`p-3 rounded-lg flex flex-col items-center   transition-colors ${
-        isClicked ? 'bg-blue-600/80 shadow-lg scale-105' : 'bg-gray-700/50 hover:bg-gray-700'}`}>
+        isClicked ? 'bg-blue-600/80 shadow-lg scale-105' : auth.guest?'bg-gray-700/20': 'bg-gray-700/50 hover:bg-gray-700'}`}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-6 w-6 mb-1"
@@ -141,8 +156,14 @@ const saving=()=>{
         </svg>
         <span>Save</span>
       </button>
-      <button 
-        className="p-3 rounded-lg flex flex-col items-center bg-gray-700/50 hover:bg-gray-700 transition-colors">
+      <button
+        onClick={() => setActiveTool("mirror")} 
+        className={`p-3 rounded-lg flex flex-col items-center transition-all ${
+          activeTool === "mirror"
+            ? "bg-blue-600/80 shadow-lg scale-105"
+            : "bg-gray-700/50 hover:bg-gray-700"
+        }`}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-6 w-6 mb-1"
@@ -159,8 +180,14 @@ const saving=()=>{
         </svg>
         <span>Mirror</span>
       </button>
-      <button 
-        className="p-3 rounded-lg flex flex-col items-center bg-gray-700/50 hover:bg-gray-700 transition-colors">
+      <button
+        onClick={() => setActiveTool("compress")} 
+        className={`p-3 rounded-lg flex flex-col items-center transition-all ${
+          activeTool === "compress"
+            ? "bg-blue-600/80 shadow-lg scale-105"
+            : "bg-gray-700/50 hover:bg-gray-700"
+        }`}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-6 w-6 mb-1"
@@ -177,8 +204,14 @@ const saving=()=>{
         </svg>
         <span>Compress</span>
       </button>
-      <button 
-        className="p-3 rounded-lg flex flex-col items-center bg-gray-700/50 hover:bg-gray-700 transition-colors">
+      <button
+        onClick={() => setActiveTool("bgremove")} 
+       className={`p-3 rounded-lg flex flex-col items-center transition-all ${
+          activeTool === "bgremove"
+            ? "bg-blue-600/80 shadow-lg scale-105"
+            : "bg-gray-700/50 hover:bg-gray-700"
+        }`}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-6 w-6 mb-1"
@@ -221,7 +254,7 @@ const ImageUpload = ({ handleImageUpload, resetChanges, image, deleteImage }) =>
           onClick={resetChanges}
           className="w-full mt-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
         >
-          Reset Image
+          Reset Changes
         </button>
       )}
       {image && (
@@ -229,7 +262,7 @@ const ImageUpload = ({ handleImageUpload, resetChanges, image, deleteImage }) =>
           onClick={deleteImage}
           className="w-full mt-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
         >
-          Delete Image
+          Delete this Image
         </button>
       )}
     </div>

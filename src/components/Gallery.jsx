@@ -20,12 +20,13 @@ export default function Gallery({setView,savedImages}) {
                   <p className="text-gray-500">No saved images yet.</p>
                 </div>
               ) : (
+                
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                  {savedImages.map((img, index) => (
-                    <div key={index} className="p-2 bg-white rounded-lg shadow">
+                  {savedImages.map((image) => (
+                    <div key={image.id} className="p-2 bg-white rounded-lg shadow">
                       <img
-                        src={img}
-                        alt={`Saved fig ${index}`}
+                        src={`data:image/jpeg;base64,${image.imageData}`}
+                        alt={`Saved fig ${image.id}`}
                         className="w-full h-auto object-cover rounded-md aspect-square"
                         onError={(e) =>
                           (e.target.src =

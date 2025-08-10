@@ -3,7 +3,7 @@ import Canvas from "./Canvas";
 import ToolControls from "./ToolControls";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { useRef,useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 const Editor = ({
   image,
@@ -19,26 +19,38 @@ const Editor = ({
   handleImageUpload,
   handleRotate,
   applyChanges,
+  size,
+  setSize,
+  ctrlParam,
+  setCtrlParam,
+  originalDimensions,
 }) => {
   const imageRef = useRef(null);
   const [scale, setScale] = useState(1);
   const [clientDisplay, setClientDisplay] = useState({
-    scaledWidth:100,
-    scaledHeight:100,
+    scaledWidth: 100,
+    scaledHeight: 100,
   });
-  // const [scaledParam, setScaledParam] = useState(null);
+
+  useEffect(() => {
+    setClientDisplay({
+      scaledWidth: originalDimensions.width,
+      scaledHeight: originalDimensions.height,
+    });
+  }, [originalDimensions]);
 
   const handleImageLoad = (img) => {
     imageRef.current = img; // Store the loaded image reference
     const displayWidth = img.clientWidth;
     const originalWidth = img.naturalWidth;
     const originalHeight = img.naturalHeight;
+
     setScale(originalWidth / displayWidth);
     const orgDimension = {
-      scaledWidth:originalWidth,
-      scaledHeight:originalHeight
-    }
-    setClientDisplay(orgDimension)
+      scaledWidth: originalWidth,
+      scaledHeight: originalHeight,
+    };
+    setClientDisplay(orgDimension);
   };
 
   const handleCropComplete = (crop) => {
@@ -62,7 +74,7 @@ const Editor = ({
           <UploadPrompt handleImageUpload={handleImageUpload} />
         ) : (
           //flex flex-col items-center justify-center h-96 border-2 border-dashed border-gray-600 rounded-lg
-          <div className="relative w-full h-99 flex items-center justify-center overflow-hidden">
+          <div className="relative w-full sm:h-85 flex items-center justify-center overflow-hidden">
             {activeTool === "crop" ? (
               <div className="w-full h-full justify-center">
                 <ReactCrop
@@ -70,8 +82,8 @@ const Editor = ({
                   onChange={(c) => setCropParams(c)}
                   // onComplete={(c) => setCompletedCrop(c)}
                   onComplete={handleCropComplete}
-                  className="m-2 border border-transparent outline-4 outline-blue-500 rounded-lg h-96vh max-h-96 w-auto "
-                    style={{
+                  className="m-2 border border-transparent outline-4 outline-blue-500 rounded-lg h-96vh max-h-82 w-auto "
+                  style={{
                     aspectRatio: "auto", // Maintain original aspect ratio
                   }}
                 >
@@ -81,10 +93,8 @@ const Editor = ({
                     onLoad={(e) => handleImageLoad(e.currentTarget)}
                     alt="Current preview"
                     className="w-auto h-full object-contain items-center justify-center"
-                   
                   />
                 </ReactCrop>
-                
               </div>
             ) : (
               <Canvas
@@ -104,15 +114,17 @@ const Editor = ({
             setActiveTool={setActiveTool}
             cropParams={cropParams}
             setCropParams={setCropParams}
-            // scaledParam={scaledParam}
-            // setScaledParams={setScaledParam}
+            size={size}
+            setSize={setSize}
             clientDisplay={clientDisplay}
             rotateAngle={rotateAngle}
             handleRotate={handleRotate}
             applyChanges={applyChanges}
+            ctrlParam={ctrlParam}
+            setCtrlParam={setCtrlParam}
           />
         )}
-        {completedCrop && (
+        {/* {completedCrop && (
         <div>
           <h3>Cropped Area:</h3>
           <p>X: {completedCrop.x}</p>
@@ -120,7 +132,7 @@ const Editor = ({
           <p>Width: {completedCrop.width}</p>
           <p>Height: {completedCrop.height}</p>
         </div>
-      )}
+      )} */}
       </div>
     </div>
   );

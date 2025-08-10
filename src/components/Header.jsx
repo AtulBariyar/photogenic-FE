@@ -1,9 +1,15 @@
 
-const Header = ({ view, setView, logout }) => {
+const Header = ({ view, setView, logout,auth,loadGallery }) => {
   const guest = false;
   const handlelogout = () => {
     logout();
   };
+
+  const handleGallery=()=>{
+    loadGallery();
+    setView("gallery");
+  }
+
   return (
     <header className="flex flex-row bg-blue-600/90 shadow-lg backdrop-blur-sm justify-between">
       <div className="container mx-auto px-4 py-4 sm:py-6 flex flex-row gap-2">
@@ -15,12 +21,16 @@ const Header = ({ view, setView, logout }) => {
           </p>
         </div>
       </div>
+      
+      <button disabled className={`text-white font-bold ${auth.guest?'':'hidden'}`}>Hello Guest</button>
+
       <div className="flex flex-row gap-3 sm:gap-4 mx-1 sm:mx-5 my-2 px-3 py-4 sm:py-8">
-        {/* <button disabled className={`text-white font-bold ${guest?'':'hidden'}`}>Hello Guest</button> */}
+        
         {view === "editor" && (
           <button
-            onClick={() => setView("gallery")}
-            className="rounded text-white font-bold px-2 bg-gradient-to-r from-sky-500 to-purple-400 "
+            onClick={handleGallery}
+            disabled={auth.guest}
+            className={`rounded text-white ${auth.guest?'hidden':''} font-bold px-2 bg-gradient-to-r from-sky-500 to-purple-400`}
           >
             Gallery
           </button>
@@ -29,7 +39,7 @@ const Header = ({ view, setView, logout }) => {
           onClick={handlelogout}
           className="rounded text-red-600 font-bold px-2 bg-gradient-to-r from-red-300 to-red-200 "
         >
-          signout
+          {auth.guest?"Login": "signout"}
         </button>
       </div>
     </header>

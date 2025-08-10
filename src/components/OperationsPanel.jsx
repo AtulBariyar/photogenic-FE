@@ -1,80 +1,121 @@
-
-const OperationsPanel = ({ operations, setOperations , handleExport, setNotification}) => {
-  const handleSingleOp=(index)=>{
-    const newArray = [... operations];
-    newArray.splice(index,1);
+const OperationsPanel = ({
+  operations,
+  setOperations,
+  handleExport,
+  setNotification,
+}) => {
+  const handleSingleDel = (index) => {
+    const newArray = [...operations];
+    newArray.splice(index, 1);
     setOperations(newArray);
     setNotification({
-        type: "info",
-        message: "Cleared History!",
-      });
+      type: "info",
+      message: "Cleared History!",
+    });
   };
 
-  const handleOperations=()=>{
+  const handleAllOpDeletion = () => {
     setOperations([]);
     setNotification({
-        type: "info",
-        message: "Cleared all History!",
-      });
+      type: "info",
+      message: "Cleared all History!",
+    });
   };
 
-
   return (
-
     <div className="order-3 w-full lg:w-72 bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-xl p-5">
-             <ExportOptions handleExport={handleExport} />
-            <h2 className="text-xl font-semibold mb-5 pb-2 border-b border-gray-700">History</h2>
+      <ExportOptions handleExport={handleExport} />
 
-            <div className="space-y-3">
-              
-              {operations.length === 0 ? (
-                <div className="text-center py-8 text-gray-400">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <p>Your editing history will appear here</p>
-                </div>
-              ) : (
-                <>
-                  {operations.map((op, index) => (
-                    <div key={index} className="p-3 bg-gray-700/50 rounded-lg">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <span className="font-medium capitalize">{op.type}</span>
-                          {typeof op.params === 'number' ? (
-                            <span>: {op.params}°</span>
-                          ) : (
-                            <div className="text-sm mt-1">
-                              <div>X: {Math.round(op.params.x)}%</div>
-                              <div>Y: {Math.round(op.params.y)}%</div>
-                              <div>Size: {Math.round(op.params.width)}×{Math.round(op.params.height)}</div>
-                            </div>
-                          )}
-                        </div>
-                        <button onClick={()=>{handleSingleOp(index)}}
-                        className="text-gray-400 hover:text-white">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+      <h2 className="text-xl font-semibold mb-5 pb-2 border-b border-gray-700">
+        History
+      </h2>
 
-                  <button onClick={handleOperations} className="w-full mt-4 p-2 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors">
-                    Clear History
-                  </button>
-                </>
-              )}
-            </div>
+      <div className="space-y-3">
+        {operations.length === 0 ? (
+          <div className="text-center py-8 text-gray-400">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-10 w-10 mx-auto mb-3"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1}
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <p>Your editing history will appear here</p>
           </div>
+        ) : (
+          <>
+            {operations.map((op, index) => (
+              <div key={index} className="p-3 bg-gray-700/50 rounded-lg">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <span className="font-medium capitalize">{op.type}</span>
+                    {op.type === "rotate" ? ( <span>: {op.params}°</span>)
+                   : op.type === "crop" ? (<div className="text-sm mt-1">
+                                             <div>X: {Math.round(op.params.x)}%</div>
+                                              <div>Y: {Math.round(op.params.y)}%</div>
+                                              <div>
+                                               Size: {Math.round(op.params.width)}×
+                                               {Math.round(op.params.height)}
+                                              </div>
+                                            </div> )
+                   :  op.type === "resize" ? (<span>: {op.params} % </span>)
+                   :  op.type === "watermark" ? (<span>: {op.params} </span>) 
+                   :  op.type === "mirror" ? (<span>: {op.params} </span>) 
+                   : op.type === "compress" ? (<span>: {op.params}% </span>)
+                   :  (<span>: Background Removed </span>)
+                    }
+                  </div>
+                  <button
+                    onClick={() => {
+                      handleSingleDel(index);
+                    }}
+                    className="text-gray-400 hover:text-white"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            <button
+              onClick={handleAllOpDeletion}
+              className="w-full mt-4 p-2 text-sm bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+            >
+              Clear History
+            </button>
+          </>
+        )}
+      </div>
+    </div>
   );
 };
 
 const ExportOptions = ({ handleExport }) => {
   return (
     <div className="mt-2 mb-5">
-      <h3 className="text-xl font-medium mb-3 pb-2 border-b border-gray-700">Export Options</h3>
+      <h3 className="text-xl font-medium mb-3 pb-2 border-b border-gray-700">
+        Export Options
+      </h3>
       <div className="grid grid-cols-2 gap-3">
         <button
           onClick={() => handleExport("png")}

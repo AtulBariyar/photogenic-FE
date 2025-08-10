@@ -67,7 +67,7 @@ function App() {
         throw new Error(body.error || "An error occurred");
       }
 
-      setTimeout(() => {
+     
         setAuth({
           isAuthenticated: true,
           user: { name: data.name, email: "TestUser@gmail.com" },
@@ -75,7 +75,7 @@ function App() {
         });
         setView("editor");
         setLoading(false);
-      }, 1500);
+      
     } catch (error) {
       // console.log(error);
       setNotification({

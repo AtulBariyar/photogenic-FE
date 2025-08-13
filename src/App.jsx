@@ -39,7 +39,7 @@ function App() {
   const [originalDimensions, setOriginalDimensions] = useState({ width: 0, height: 0 });
 
   const host = import.meta.env.VITE_HOST_NAME;
-  console.log("host name is "+host);
+  
 
 
   useEffect(() => {
@@ -52,6 +52,7 @@ function App() {
 
   const login = async (data) => {
     setLoading(true);
+
     try {
       const response = await fetch(`${host}/auth/login`, {
         method: "POST",
@@ -62,7 +63,7 @@ function App() {
       });
       const body = await response.text();
       const jwtToken = body.split(":");
-      console.log(jwtToken[1]);
+      
 
       if (!response.ok) {
         throw new Error(body.error || "An error occurred");
@@ -127,6 +128,7 @@ function App() {
     setCropParams({ unit: "px", x: 10, y: 10, width: 100, height: 100 });
     setActiveTool(null);
     setCompletedCrop(null);
+    setOperations([]);
     // setProcessedImage(null);
   };
 
@@ -453,6 +455,7 @@ function App() {
   };
 
   const loadGallery = async () => {
+    setLoading(true)
     try {
       const response = await fetch(`${host}/img/listAll`, {
         method: "GET",
@@ -464,11 +467,13 @@ function App() {
       if (!response.ok) {
         if (response.status === 404) {
           setNotification({ type: "info", message: "No Image in Gallery !" });
+          setLoading(false)
         }
         return;
       }
       const body = await response.json();
       setSavedImages(body);
+      setLoading(false);
     } catch (error) {
       setNotification({ type: "error", message: "Server Failed" });
     }
@@ -527,7 +532,7 @@ function App() {
           </div>
         )}
         {auth.isAuthenticated && view === "gallery" && (
-          <Gallery setView={setView} savedImages={savedImages} />
+          <Gallery setView={setView} savedImages={savedImages} loading={loading}/>
         )}
         {auth.isAuthenticated && view === "editor" && (
           <div className="flex flex-col lg:flex-row gap-6">

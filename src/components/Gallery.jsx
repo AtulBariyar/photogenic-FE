@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function Gallery({setView,savedImages}) {
+export default function Gallery({setView,savedImages,loading}) {
   return (
     <div className="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
               <div className="flex items-center justify-between mb-6">
@@ -17,7 +17,8 @@ export default function Gallery({setView,savedImages}) {
 
               {savedImages.length === 0 ? (
                 <div className="p-8 text-center bg-white rounded-lg shadow">
-                  <p className="text-gray-500">No saved images yet.</p>
+                  {loading?<p className="text-blue-700 font-bold text-xl">Loading your images...</p>:
+                  <p className="text-gray-500">No saved images yet.</p>}
                 </div>
               ) : (
                 

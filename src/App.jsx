@@ -42,12 +42,12 @@ function App() {
   
 
 
-  useEffect(() => {
+  // useEffect(() => {
    
-    console.log("ctrlParam from app : "+ctrlParam);
+  //   console.log("ctrlParam from app : "+ctrlParam);
     
     
-  }, [ctrlParam])
+  // }, [ctrlParam])
 
 
   const login = async (data) => {
@@ -375,7 +375,7 @@ function App() {
               : activeTool === "rotate"
               ? rotateAngle
               : activeTool ==="resize"
-              ? "some Value"
+              ? "Resized in"
               : ctrlParam,
         },
       ]);
@@ -407,7 +407,7 @@ function App() {
       else if(activeTool==="rotate"){
         formData.append("angle", rotateAngle);
       }else if(activeTool==="resize"){
-        console.log("apply changes "+ctrlParam.width);
+        
         formData.append("width", ctrlParam.width);
         formData.append("height", ctrlParam.height);
       }else if(activeTool==="watermark"){
@@ -448,7 +448,7 @@ function App() {
         });
         setActiveTool(null);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         setNotification({ type: "error", message: "Something Went Wrong" });
       }
     }

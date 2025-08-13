@@ -20,8 +20,7 @@ const [resizePercent, setResizePercent] = useState(0);
       setResizePercent(val);
       const w = Math.round(clientDisplay.scaledWidth * (val/100));
       const h = Math.round(clientDisplay.scaledHeight * (val/100));
-      console.log(w+" and "+h);
-      console.log("client data"+clientDisplay.scaledHeight);
+      
       setControlMain((prev)=>({
         ...prev,
         resize:{...prev.resize,

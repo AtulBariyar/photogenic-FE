@@ -1,4 +1,5 @@
 import { useState } from "react";
+import logo from '../assets/logo.svg';
 
 export default function AuthForm({ type, onSubmit, loading, switchFormType, guestLogin }) { 
   const [formData, setFormData] = useState(
@@ -28,7 +29,7 @@ export default function AuthForm({ type, onSubmit, loading, switchFormType, gues
     <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
       <div className="flex justify-center gap-2 ">
         <img
-          src="/src/assets/logo.svg"
+          src={logo}
           alt="Photogenic icon"
           className="h-16"
         />

@@ -62,7 +62,7 @@ function App() {
       });
       const body = await response.text();
       const jwtToken = body.split(":");
-      // console.log(jwtToken[1]);
+      console.log(jwtToken[1]);
 
       if (!response.ok) {
         throw new Error(body.error || "An error occurred");

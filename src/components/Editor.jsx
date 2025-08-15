@@ -55,10 +55,10 @@ const Editor = ({
 
   const handleCropComplete = (crop) => {
     const scaleCrop = {
-      x: crop.x * scale,
-      y: crop.y * scale,
-      width: crop.width * scale,
-      height: crop.height * scale,
+      x: parseInt(crop.x * scale),
+      y: parseInt(crop.y * scale),
+      width: parseInt(crop.width * scale),
+      height: parseInt(crop.height * scale),
     };
     setCompletedCrop(scaleCrop);
     // setScaledParam(scaleCrop);

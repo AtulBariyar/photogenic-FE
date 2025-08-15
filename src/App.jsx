@@ -38,7 +38,9 @@ function App() {
   const [ctrlParam, setCtrlParam] = useState(null);
   const [originalDimensions, setOriginalDimensions] = useState({ width: 0, height: 0 });
 
-  const host = import.meta.env.VITE_HOST_NAME;
+  const host2 = import.meta.env.VITE_HOST_NAME;
+  const host = "http://localhost:8080";
+
   
 
 
@@ -127,8 +129,9 @@ function App() {
     setRotateAngle(0);
     setCropParams({ unit: "px", x: 10, y: 10, width: 100, height: 100 });
     setActiveTool(null);
-    setCompletedCrop(null);
+    setCompletedCrop({ unit: "px", x: 10, y: 10, width: 100, height: 100 });
     setOperations([]);
+    setCompletedCrop(null);
     // setProcessedImage(null);
   };
 
@@ -341,6 +344,7 @@ function App() {
     setActiveTool(null);
     setRotateAngle(0);
     setCtrlParam(null);
+    setCompletedCrop(null);
   };
 
   const resetChanges = () => {
@@ -399,10 +403,10 @@ function App() {
 
       formData.append("file", imageFile);
       if(activeTool==="crop"){
-        formData.append("x", completedCrop.x)
-        formData.append("y", completedCrop.y)
-        formData.append("width", completedCrop.width)
-        formData.append("height", completedCrop.height)
+        formData.append("x", Math.round(completedCrop.x))
+        formData.append("y", Math.round(completedCrop.y))
+        formData.append("width", Math.round(completedCrop.width))
+        formData.append("height", Math.round(completedCrop.height))
       }
       else if(activeTool==="rotate"){
         formData.append("angle", rotateAngle);
@@ -438,9 +442,10 @@ function App() {
           ""
         );
         const base64Image = btoa(binaryString);
+        setRotateAngle(0);
         setPreview(`data:${contentType};base64,${base64Image}`);
         // console.log(preview);
-        setImageCopy(preview);
+        setImageCopy(`data:${contentType};base64,${base64Image}`);
 
         setNotification({
           type: "success",

@@ -10,7 +10,7 @@ export default function Controls({
 const [resizePercent, setResizePercent] = useState(0);
 
   const handleControlMain = (val) => {
-    setControlMain((prev) => ({
+        setControlMain((prev) => ({
       ...prev,
       [activeTool]: val,
     }));

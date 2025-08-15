@@ -399,10 +399,10 @@ function App() {
 
       formData.append("file", imageFile);
       if(activeTool==="crop"){
-        formData.append("x", cropParams.x)
-        formData.append("y", cropParams.y)
-        formData.append("width", cropParams.width)
-        formData.append("height", cropParams.height)
+        formData.append("x", completedCrop.x)
+        formData.append("y", completedCrop.y)
+        formData.append("width", completedCrop.width)
+        formData.append("height", completedCrop.height)
       }
       else if(activeTool==="rotate"){
         formData.append("angle", rotateAngle);

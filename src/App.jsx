@@ -419,7 +419,8 @@ function App() {
       }else if(activeTool==="mirror"){
         formData.append("direction",ctrlParam);
       }else if(activeTool==="compress"){
-        formData.append("size",parseInt(ctrlParam));
+        formData.append("size",parseFloat(ctrlParam/100));
+        // console.log("compree value "+ctrlParam/100);
       }
 
         try {

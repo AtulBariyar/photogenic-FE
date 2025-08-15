@@ -412,14 +412,14 @@ function App() {
         formData.append("angle", rotateAngle);
       }else if(activeTool==="resize"){
         
-        formData.append("width", ctrlParam.width);
-        formData.append("height", ctrlParam.height);
+        formData.append("width", parseInt(ctrlParam.width));
+        formData.append("height", parseInt(ctrlParam.height));
       }else if(activeTool==="watermark"){
         formData.append("title",ctrlParam);
       }else if(activeTool==="mirror"){
         formData.append("direction",ctrlParam);
       }else if(activeTool==="compress"){
-        formData.append("size",ctrlParam);
+        formData.append("size",parseInt(ctrlParam));
       }
 
         try {

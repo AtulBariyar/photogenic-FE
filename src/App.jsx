@@ -38,8 +38,8 @@ function App() {
   const [ctrlParam, setCtrlParam] = useState(null);
   const [originalDimensions, setOriginalDimensions] = useState({ width: 0, height: 0 });
 
-  const host2 = import.meta.env.VITE_HOST_NAME;
-  const host = "http://localhost:8080";
+  const host = import.meta.env.VITE_HOST_NAME;
+  // const host = "http://localhost:8080";
 
   
 
